@@ -11,7 +11,7 @@ import { Share } from '@capacitor/share';
   templateUrl: 'tab1.page.html',
   styleUrls: ['tab1.page.scss']
 })
-export class Tab1Page {
+export class Tab1Page implements OnInit {
   title = "Grocery List";
   items: GroceryItem[]=[];
   errorMessage: string = '';
@@ -44,8 +44,7 @@ export class Tab1Page {
       this.loadItems();
     });
   }
-
-  ngOnInIt(){
+  ngOnInit(){
     this.loadItems();
   }
 
@@ -54,12 +53,19 @@ export class Tab1Page {
   }
 
   loadItems(){
-    this.groceriesService.getItems()
-    .subscribe(
-      items => this.items = items,
+    this.groceriesService.getItems().subscribe(
+      data => {
+        this.items = data;
+      },
+      (error) => {
+        console.error("Error fetching Grocery Items", error);
+      }
+    );
+    }
+      /*  items => this.items = items,
       error => this.errorMessage= <any>error);
     
-  }
+  } */
 
   async removeItem(_id: string) {
      this.groceriesService.removeItem(_id);
