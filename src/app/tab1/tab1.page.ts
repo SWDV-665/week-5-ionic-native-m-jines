@@ -1,8 +1,8 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { ToastController } from '@ionic/angular';
 import { AlertController} from '@ionic/angular';
 import { NavController } from '@ionic/angular';
-import { GroceriesService } from 'src/app/groceries.service';
+import { GroceriesService, GroceryItem } from 'src/app/groceries.service';
 import { InputDialogServiceService } from 'src/app/input-dialog-service.service';
 import { Share } from '@capacitor/share';
 
@@ -13,6 +13,8 @@ import { Share } from '@capacitor/share';
 })
 export class Tab1Page {
   title = "Grocery List";
+  items: GroceryItem[]=[];
+  errorMessage: string = '';
 /*   items = [
     {
       name: "Milk",
@@ -31,20 +33,36 @@ export class Tab1Page {
       quantity: 2
     },
   ]; */
-  constructor(public toastCtrl: ToastController, public alertCtrl: AlertController, private groceriesService:GroceriesService, private inputDialogService: InputDialogServiceService) {}
-
-  loadItems(){
-    return this.groceriesService.getItems();
+  constructor(
+    public toastCtrl: ToastController, 
+    public navCtrl: NavController, 
+    public alertCtrl: AlertController, 
+    public groceriesService:GroceriesService, 
+    private inputDialogService: InputDialogServiceService
+    ) {
+    groceriesService.dataChanged$.subscribe((dataChanged: boolean) => {
+      this.loadItems();
+    });
   }
 
-  async removeItem(item: any, index: any) {
-    console.log("Removing Item - ", item, index);
-    const toast = this.toastCtrl.create({
-      message: 'Item at index  '+ index + ' was removed successfully.',
-      duration: 3000
-    });
-    (await toast).present();
-    this.groceriesService.removeItem(index);
+  ngOnInIt(){
+    this.loadItems();
+  }
+
+  ionViewDidLoad() {
+    this.loadItems();
+  }
+
+  loadItems(){
+    this.groceriesService.getItems()
+    .subscribe(
+      items => this.items = items,
+      error => this.errorMessage= <any>error);
+    
+  }
+
+  async removeItem(_id: string) {
+     this.groceriesService.removeItem(_id);
     // this.items.splice(index,1);
   }
 

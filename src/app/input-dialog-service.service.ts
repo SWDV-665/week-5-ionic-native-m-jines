@@ -7,7 +7,9 @@ import { AlertController} from '@ionic/angular';
 })
 export class InputDialogServiceService {
 
-  constructor(public alertCtrl: AlertController, private groceriesService:GroceriesService) { }
+  constructor(public alertCtrl: AlertController, public groceriesService:GroceriesService) {
+    console.log('Hello InputDialogServiceService');
+   }
 
  /*  async showAddItemPrompt() {
     const prompt = await this.alertCtrl.create({
@@ -68,13 +70,15 @@ export class InputDialogServiceService {
         },
         {
           text: 'save',
-          handler: item => {
+          handler: data => {
             console.log('Save Clicked', item);
             if (index !== undefined) {
+              item.name = data.name;
+              item.quantity = data.quantity;
               this.groceriesService.editItem(item,index);
             }
             else {
-              this.groceriesService.addItem(item);
+              this.groceriesService.addItem(data);
             }
             /* this.groceriesService.editItem(item, index)
             // this.items[index] = item; */
